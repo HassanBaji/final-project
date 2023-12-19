@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-1.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Player {
+  id            String          @id @default(uuid())
+  fName         String
+  lName         String
+  phone         String?
+  email         String          @unique
+  created_at    DateTime        @default(now())
+  updated_at    DateTime        @updatedAt
+  PlayerInGroup PlayerInGroup[]
+  PlayerInGames PlayerInGames[]
+}
+
+model PlayerInGroup {
+  player    Player   @relation(fields: [playedId], references: [id])
+  playedId  String
+  group     Group    @relation(fields: [groupId], references: [id])
+  groupId   String
+  addedAt   DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Games     Game?    @relation(fields: [gamesId], references: [id])
+  gamesId   String?
+
+  @@id([playedId, groupId])
+}
+
+model Group {
+  id            String          @id @default(uuid())
+  name          String          @unique
+  PlayerInGroup PlayerInGroup[]
+  games         Game[]
+  PlayerInGames PlayerInGames[]
+}
+
+model PlayerInGames {
+  player   Player  @relation(fields: [playedId], references: [id])
+  playedId String
+  group    Group   @relation(fields: [groupId], references: [id])
+  groupId  String
+  Game     Game    @relation(fields: [gameId], references: [id])
+  gameId   String
+  Team     Team?   @relation(fields: [teamId], references: [id])
+  teamId   String?
+
+  @@id([playedId, gameId])
+}
+
+model Game {
+  id            String          @id @default(uuid())
+  date_and_time DateTime
+  location      String
+  teams         String
+  gameFinished  Boolean
+  PlayerInGroup PlayerInGroup[]
+  Group         Group?          @relation(fields: [groupId], references: [id])
+  groupId       String?
+  PlayerInGames PlayerInGames[]
+  Team          Team[]
+}
+
+model Team {
+  id      String          @id @default(uuid())
+  player  PlayerInGames[]
+  game    Game            @relation(fields: [gamesId], references: [id])
+  gamesId String
+}

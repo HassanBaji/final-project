@@ -1,0 +1,24 @@
+createPlayer:
+  handler: src/player/createPlayer/endPoint.default
+  events:
+    - http:
+        method: post
+        path: /v1/players
+        cors: ${file(templates/cors.yml):${self:provider.stage}}
+
+getPlayers:
+  handler: src/player/getPlayers/endPoint.default
+  events:
+    - http:
+        method: Get
+        path: /v1/players
+        cors: ${file(templates/cors.yml):${self:provider.stage}}
+        # authorizer:
+        #   name: PrivateAuthorizer
+        #   type: COGNITO_USER_POOLS
+        #   arn:
+        #     Fn::GetAtt:
+        #       - CognitoUserPool
+        #       - Arn
+        #   claims:
+        #     - email

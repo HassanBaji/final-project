@@ -1,0 +1,106 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  binaryTargets   = ["native", "rhel-openssl-1.0.x"]
+  previewFeatures = ["fullTextSearch"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Player {
+  id            String          @id @default(uuid())
+  fName         String
+  lName         String
+  phone         String
+  email         String          @unique
+  created_at    DateTime        @default(now())
+  updated_at    DateTime        @updatedAt
+  PlayerInGroup PlayerInGroup[]
+  PlayerInGames PlayerInGames[]
+  Group         Group[]
+  Invite        Invite[]
+  goalsScored   Int             @default(0)
+}
+
+model PlayerInGroup {
+  player      Player   @relation(fields: [playedId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  playedId    String
+  group       Group    @relation(fields: [groupId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  groupId     String
+  addedAt     DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  Games       Game?    @relation(fields: [gamesId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  gamesId     String?
+  goalsScored Int      @default(0)
+
+  @@id([playedId, groupId])
+}
+
+model Group {
+  id            String          @id @default(uuid())
+  name          String
+  owner         Player          @relation(fields: [playerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  PlayerInGroup PlayerInGroup[]
+  games         Game[]
+  playerId      String
+  Invite        Invite[]
+}
+
+model PlayerInGames {
+  player      Player  @relation(fields: [playedId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  playedId    String
+  Game        Game    @relation(fields: [gameId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  gameId      String
+  Team        Team?   @relation(fields: [teamId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  teamId      String?
+  goalsScored Int     @default(0)
+
+  @@id([playedId, gameId])
+}
+
+model Game {
+  id            String          @id @default(uuid())
+  date          String
+  timeStart     String
+  timeFinish    String
+  location      String
+  gameFinished  Boolean
+  goalsScored   Int             @default(0)
+  PlayerInGroup PlayerInGroup[]
+  Group         Group?          @relation(fields: [groupId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  groupId       String?
+  PlayerInGames PlayerInGames[]
+  Team          Team[]
+  limit         Int
+}
+
+model Invite {
+  id       String       @id @default(uuid())
+  player   Player       @relation(fields: [playerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  Group    Group        @relation(fields: [groupId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  playerId String
+  groupId  String
+  statues  InviteStatus @default(pending)
+
+  @@unique([playerId, groupId, statues])
+}
+
+model Team {
+  id      String          @id @default(uuid())
+  player  PlayerInGames[]
+  game    Game            @relation(fields: [gamesId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  gamesId String
+  name    String
+  winner  Boolean         @default(false)
+}
+
+enum InviteStatus {
+  accepted
+  denied
+  pending
+}

@@ -1,0 +1,31 @@
+createGame:
+  handler: src/games/createGame/endPoint.default
+  events:
+    - http:
+        method: post
+        path: /v1/game
+        cors: ${file(templates/cors.yml):${self:provider.stage}}
+
+joinGame:
+  handler: src/games/JoinGame/endPoint.default
+  events:
+    - http:
+        method: post
+        path: /v1/game/join
+        cors: ${file(templates/cors.yml):${self:provider.stage}}
+
+leaveGame:
+  handler: src/games/leaveGame/endPoint.default
+  events:
+    - http:
+        method: post
+        path: /v1/game/leave
+        cors: ${file(templates/cors.yml):${self:provider.stage}}
+
+createTeam:
+  handler: src/games/createTeam/endPoint.default
+  events:
+    - http:
+        method: post
+        path: /v1/game/team/createj
+        cors: ${file(templates/cors.yml):${self:provider.stage}}

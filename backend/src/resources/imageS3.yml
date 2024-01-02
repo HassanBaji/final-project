@@ -1,0 +1,27 @@
+Resources:
+  groupImageBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: ${self:provider.stage}-${self:service}-group-image-bucket
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: FALSE
+        BlockPublicPolicy: FALSE
+        IgnorePublicAcls: FALSE
+        RestrictPublicBuckets: FALSE
+
+  groupImageBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket:
+        Ref: groupImageBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: 'Allow'
+            Principal: '*'
+            Action:
+              - s3:PutObject
+              - s3:PutObjectTagging
+              - s3:GetObject
+            Resource:
+              Fn::Sub: 'arn:aws:s3:::${groupImageBucket}/*'

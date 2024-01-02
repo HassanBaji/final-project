@@ -1,0 +1,39 @@
+createGroup:
+  handler: src/group/createGroup/endPoint.default
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:PutObjectAcl
+        - s3:PutObjectTagging
+        - s3:PutBucketAc
+        - s3:ListObjectsV2
+        - s3:GetObject
+        - sns:Publish
+      Resource:
+        - arn:aws:s3:::dev-football-group-management-group-image-bucket/*
+
+  environment:
+    BUCKET_NAME:
+      Ref: groupImageBucket
+  events:
+    - http:
+        method: post
+        path: /v1/group
+        cors: ${file(templates/cors.yml):${self:provider.stage}}
+
+getPlayerGroups:
+  handler: src/group/getPlayerGroups/endPoint.default
+  events:
+    - http:
+        method: Get
+        path: /v1/group/{id}/playerGroups
+        cors: ${file(templates/cors.yml):${self:provider.stage}}
+
+invitePlayers:
+  handler: src/group/invitePlayers/endPoint.default
+  events:
+    - http:
+        method: post
+        path: /v1/group/inviteplayers
+        cors: ${file(templates/cors.yml):${self:provider.stage}}

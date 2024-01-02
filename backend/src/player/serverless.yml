@@ -22,3 +22,71 @@ getPlayers:
         #       - Arn
         #   claims:
         #     - email
+
+getPlayersByEmail:
+  handler: src/player/getPlayerByEmail/endPoint.default
+  events:
+    - http:
+        method: post
+        path: /v1/players/email
+        cors: ${file(templates/cors.yml):${self:provider.stage}}
+        # authorizer:
+        #   name: PrivateAuthorizer
+        #   type: COGNITO_USER_POOLS
+        #   arn:
+        #     Fn::GetAtt:
+        #       - CognitoUserPool
+        #       - Arn
+        #   claims:
+        #     - email
+
+searchForPlayers:
+  handler: src/player/searchForPlayers/endPoint.default
+  events:
+    - http:
+        method: Get
+        path: /v1/players/{id}/search
+        cors: ${file(templates/cors.yml):${self:provider.stage}}
+        # authorizer:
+        #   name: PrivateAuthorizer
+        #   type: COGNITO_USER_POOLS
+        #   arn:
+        #     Fn::GetAtt:
+        #       - CognitoUserPool
+        #       - Arn
+        #   claims:
+        #     - email
+
+getInvitesForPlayer:
+  handler: src/player/getInvitesForPlayer/endPoint.default
+  events:
+    - http:
+        method: Get
+        path: /v1/players/{id}/invites
+        cors: ${file(templates/cors.yml):${self:provider.stage}}
+        # authorizer:
+        #   name: PrivateAuthorizer
+        #   type: COGNITO_USER_POOLS
+        #   arn:
+        #     Fn::GetAtt:
+        #       - CognitoUserPool
+        #       - Arn
+        #   claims:
+        #     - email
+
+acceptInvite:
+  handler: src/player/acceptInvite/endPoint.default
+  events:
+    - http:
+        method: post
+        path: /v1/players/invites/accept
+        cors: ${file(templates/cors.yml):${self:provider.stage}}
+        # authorizer:
+        #   name: PrivateAuthorizer
+        #   type: COGNITO_USER_POOLS
+        #   arn:
+        #     Fn::GetAtt:
+        #       - CognitoUserPool
+        #       - Arn
+        #   claims:
+        #     - email

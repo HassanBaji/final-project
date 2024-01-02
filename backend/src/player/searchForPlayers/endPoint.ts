@@ -1,11 +1,12 @@
 import { middyfy } from '@lib/middleware';
-import { GetPlayersUseCase } from './useCase';
+import { SearchForPlayersUseCase } from './useCase';
 
 export default middyfy(async (event) => {
-  const getPlayersUseCase = new GetPlayersUseCase();
+  const { id } = event.pathParameters;
+  const useCase = new SearchForPlayersUseCase();
 
   try {
-    const players = await getPlayersUseCase.exec();
+    const players = await useCase.exec(id);
     return {
       statusCode: 201,
       body: JSON.stringify(players)

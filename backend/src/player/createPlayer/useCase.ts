@@ -14,10 +14,6 @@ export class CreatePlayerUseCase {
     phone: string
   ) => {
     try {
-      console.log(
-        'f: ' + fName,
-        'l ' + lName + 'phone ' + phone + 'email ' + email
-      );
       const newPlayer = await this.client.player.create({
         data: {
           fName: fName,
